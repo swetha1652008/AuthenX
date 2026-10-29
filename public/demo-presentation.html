@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AuthenX - Live Demo Video Presentation & Walkthrough</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: #111827;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --accent: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --text-main: #f9fafb;
+      --text-muted: #9ca3af;
+      --border: #1f2937;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+    }
+    .brand i {
+      color: var(--primary);
+      font-size: 1.5rem;
+    }
+    .badge {
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      border: none;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-main);
+    }
+    .btn-outline:hover {
+      background: var(--border);
+    }
+    .btn-accent {
+      background: #059669;
+      color: white;
+    }
+    .btn-accent:hover {
+      background: #047857;
+    }
+    .main-container {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 24px;
+      padding: 24px 32px;
+      flex: 1;
+      max-width: 1600px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    @media (max-width: 1024px) {
+      .main-container {
+        grid-template-columns: 1fr;
+      }
+    }
+    .player-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .video-viewport {
+      background: #030712;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      aspect-ratio: 16 / 9;
+      position: relative;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+    }
+    .viewport-mockup-header {
+      background: #1f2937;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      border-bottom: 1px solid #374151;
+    }
+    .dots {
+      display: flex;
+      gap: 6px;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .dot-red { background: #ef4444; }
+    .dot-yellow { background: #f59e0b; }
+    .dot-green { background: #10b981; }
+    .url-bar {
+      background: #111827;
+      border-radius: 6px;
+      padding: 4px 12px;
+      flex: 1;
+      font-family: monospace;
+      color: #93c5fd;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .viewport-body {
+      flex: 1;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      background: linear-gradient(135deg, #0b1120 0%, #111827 100%);
+    }
+    .scene-content {
+      width: 100%;
+      height: 100%;
+      display: none;
+      flex-direction: column;
+      animation: fadeIn 0.4s ease forwards;
+    }
+    .scene-content.active {
+      display: flex;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .playback-controls {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .play-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: transform 0.15s ease;
+    }
+    .play-btn:hover {
+      transform: scale(1.05);
+      background: var(--primary-hover);
+    }
+    .timeline-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .timeline-bar {
+      width: 100%;
+      height: 6px;
+      background: #374151;
+      border-radius: 9999px;
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+    }
+    .timeline-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--primary);
+      transition: width 0.1s linear;
+    }
+    .timeline-time {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    .sidebar-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+    }
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .scene-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .scene-item {
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: #1e293b;
+      cursor: pointer;
+      border: 1px solid transparent;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.2s;
+    }
+    .scene-item:hover {
+      background: #334155;
+    }
+    .scene-item.active {
+      background: rgba(59, 130, 246, 0.15);
+      border-color: rgba(59, 130, 246, 0.4);
+    }
+    .scene-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #94a3b8;
+    }
+    .scene-item.active .scene-num {
+      background: var(--primary);
+      color: white;
+    }
+    .scene-info {
+      flex: 1;
+    }
+    .scene-name {
+      font-size: 0.825rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+    .scene-time {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+    .script-box {
+      background: #0f172a;
+      border: 1px solid #1e293b;
+      border-radius: 8px;
+      padding: 14px;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: #cbd5e1;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+    .recording-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 0.8rem;
+    }
+    .step-pill {
+      background: #1e293b;
+      padding: 8px 12px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #e2e8f0;
+    }
+    .key-badge {
+      background: #334155;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-weight: bold;
+      color: #38bdf8;
+    }
+    .highlight-box {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 12px;
+      font-size: 0.8rem;
+      color: #a7f3d0;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <i class="fa-solid fa-shield-halved"></i>
+      <span>AuthenX</span>
+      <span class="badge">Live Demo Video Guide</span>
+    </div>
+    <div class="nav-actions">
+      <a href="/documents" target="_blank" class="btn btn-outline">
+        <i class="fa-solid fa-arrow-up-right-from-square"></i> Open Live App
+      </a>
+      <button onclick="toggleSpeech()" id="speech-btn" class="btn btn-primary">
+        <i class="fa-solid fa-volume-high"></i> <span id="speech-text">Narrate Voiceover</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="main-container">
+    <!-- Left Section: Video Simulator -->
+    <section class="player-section">
+      <div class="video-viewport">
+        <div class="viewport-mockup-header">
+          <div class="dots">
+            <span class="dot dot-red"></span>
+            <span class="dot dot-yellow"></span>
+            <span class="dot dot-green"></span>
+          </div>
+          <div class="url-bar">
+            <i class="fa-solid fa-lock"></i>
+            <span id="mockup-url">http://127.0.0.1:5173/documents</span>
+          </div>
+          <div>
+            <span class="badge" style="background: rgba(239, 68, 68, 0.2); color: #fca5a5; border-color: rgba(239, 68, 68, 0.4);" id="rec-status">
+              <i class="fa-solid fa-circle" style="font-size: 0.5rem; margin-right: 4px;"></i> REC READY
+            </span>
+          </div>
+        </div>
+
+        <div class="viewport-body" id="viewport-body">
+
+          <!-- Scene 1: Introduction -->
+          <div class="scene-content active" id="scene-1">
+            <div style="text-align: center; max-width: 650px; margin: auto;">
+              <div style="font-size: 3rem; margin-bottom: 12px; color: #3b82f6;">
+                <i class="fa-solid fa-award"></i>
+              </div>
+              <h1 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 12px; background: linear-gradient(to right, #60a5fa, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                AuthenX — AI-Powered Application Validation
+              </h1>
+              <p style="font-size: 1.05rem; color: #94a3b8; line-height: 1.6; margin-bottom: 24px;">
+                AICTE Problem Statement: Autonomous Document Authentication, Tampering Detection & Regulatory Compliance Verification
+              </p>
+              <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                <span style="background: #1e293b; border: 1px solid #334155; padding: 6px 14px; border-radius: 9999px; font-size: 0.8rem; color: #38bdf8;">
+                  <i class="fa-solid fa-microchip"></i> Gemini 2.5 Flash
+                </span>
+                <span style="background: #1e293b; border: 1px solid #334155; padding: 6px 14px; border-radius: 9999px; font-size: 0.8rem; color: #4ade80;">
+                  <i class="fa-solid fa-file-pdf"></i> Real PDF.js + Tesseract OCR
+                </span>
+                <span style="background: #1e293b; border: 1px solid #334155; padding: 6px 14px; border-radius: 9999px; font-size: 0.8rem; color: #facc15;">
+                  <i class="fa-solid fa-database"></i> SQLite WAL Audit Logs
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Scene 2: Tenant Isolation -->
+          <div class="scene-content" id="scene-2">
+            <div style="width: 100%; max-width: 700px; margin: auto;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="color: #60a5fa; font-size: 1.2rem;"><i class="fa-solid fa-building-columns"></i> Multi-Tenant Institution Isolation</h3>
+                <span class="badge">Security Enforced</span>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div style="background: #1e293b; border: 1px solid #3b82f6; border-radius: 12px; padding: 16px;">
+                  <div style="font-weight: 700; color: #93c5fd; margin-bottom: 8px;">Apex Institute of Technology</div>
+                  <div style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 4px;">Permanent ID: <code style="color: #67e8f9;">1-938210941</code></div>
+                  <div style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 10px;">Role: Institution Administrator</div>
+                  <div style="background: rgba(59, 130, 246, 0.15); padding: 8px; border-radius: 6px; font-size: 0.75rem; color: #bfdbfe;">
+                    <i class="fa-solid fa-check"></i> Isolated Scope: Only sees Apex applications & documents
+                  </div>
+                </div>
+                <div style="background: #1e293b; border: 1px solid #374151; border-radius: 12px; padding: 16px;">
+                  <div style="font-weight: 700; color: #cbd5e1; margin-bottom: 8px;">NIEAR Mysuru</div>
+                  <div style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 4px;">Permanent ID: <code style="color: #67e8f9;">1-482019382</code></div>
+                  <div style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 10px;">Role: Institution Administrator</div>
+                  <div style="background: rgba(239, 68, 68, 0.15); padding: 8px; border-radius: 6px; font-size: 0.75rem; color: #fca5a5;">
+                    <i class="fa-solid fa-ban"></i> Zero cross-tenant data leakage via URL injection
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Scene 3: Real OCR Extraction -->
+          <div class="scene-content" id="scene-3">
+            <div style="width: 100%; max-width: 720px; margin: auto;">
+              <h3 style="color: #38bdf8; font-size: 1.15rem; margin-bottom: 14px;"><i class="fa-solid fa-file-lines"></i> Real Document Text Extraction (No Mock Data)</h3>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                <div style="background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 14px;">
+                  <div style="font-size: 0.8rem; font-weight: 700; color: #a5b4fc; margin-bottom: 6px;">Client-Side Extraction Engine</div>
+                  <ul style="font-size: 0.75rem; color: #cbd5e1; line-height: 1.7; padding-left: 18px;">
+                    <li><strong>PDFs:</strong> Native text parsed via <code>pdfjs-dist</code></li>
+                    <li><strong>Scanned Images:</strong> In-browser OCR via <code>tesseract.js</code></li>
+                    <li><strong>Hashing:</strong> Web Crypto API SHA-256 generation</li>
+                    <li><strong>No Fake Text:</strong> Fails explicitly if unreadable</li>
+                  </ul>
+                </div>
+                <div style="background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 14px;">
+                  <div style="font-size: 0.8rem; font-weight: 700; color: #6ee7b7; margin-bottom: 6px;">Live Extracted Evidence</div>
+                  <div style="font-family: monospace; font-size: 0.7rem; background: #020617; padding: 10px; border-radius: 6px; color: #7dd3fc; max-height: 100px; overflow-y: auto;">
+                    GOVERNMENT OF KARNATAKA<br>
+                    HIGHER EDUCATION DEPARTMENT<br>
+                    Permanent Institute ID: 1-778899001<br>
+                    Institution: Metropolitan Polytechnic<br>
+                    Issue Date: 25-11-2026 | Expiry: 15-06-2025
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Scene 4: Suspicious Document Anomaly -->
+          <div class="scene-content" id="scene-4">
+            <div style="width: 100%; max-width: 750px; margin: auto;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 style="color: #f87171; font-size: 1.15rem;"><i class="fa-solid fa-triangle-exclamation"></i> Suspicious Sample A — Tampering Detected</h3>
+                <span class="badge" style="background: rgba(239, 68, 68, 0.2); color: #f87171; border-color: rgba(239, 68, 68, 0.4);">Needs Manual Review</span>
+              </div>
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px;">
+                <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; padding: 10px;">
+                  <div style="font-size: 0.75rem; font-weight: 700; color: #fca5a5;">1. PID Spoofing</div>
+                  <div style="font-size: 0.7rem; color: #cbd5e1; margin-top: 4px;">Found <code>1-778899001</code> vs expected <code>1-938210941</code> (Apex).</div>
+                </div>
+                <div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 8px; padding: 10px;">
+                  <div style="font-size: 0.75rem; font-weight: 700; color: #fde68a;">2. Chronological Inversion</div>
+                  <div style="font-size: 0.7rem; color: #cbd5e1; margin-top: 4px;">Issue date <code>25-11-2026</code> is after Expiry <code>15-06-2025</code>.</div>
+                </div>
+                <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; padding: 10px;">
+                  <div style="font-size: 0.75rem; font-weight: 700; color: #fca5a5;">3. Photoshop Markers</div>
+                  <div style="font-size: 0.7rem; color: #cbd5e1; margin-top: 4px;">Extracted PDF producer: <code>Adobe Photoshop 24.1</code>.</div>
+                </div>
+              </div>
+              <div style="background: #1e293b; padding: 10px 14px; border-radius: 8px; font-size: 0.75rem; color: #94a3b8;">
+                <i class="fa-solid fa-scale-balanced" style="color: #60a5fa;"></i> <strong>AICTE Rule:</strong> Flagged as warning requiring human review. Never auto-rejected without officer sign-off.
+              </div>
+            </div>
+          </div>
+
+          <!-- Scene 5: Consistent Document -->
+          <div class="scene-content" id="scene-5">
+            <div style="width: 100%; max-width: 750px; margin: auto;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 style="color: #4ade80; font-size: 1.15rem;"><i class="fa-solid fa-circle-check"></i> Consistent Sample B — Checks Passed</h3>
+                <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #4ade80; border-color: rgba(16, 185, 129, 0.4);">Checks Passed</span>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 12px;">
+                  <div style="font-size: 0.8rem; font-weight: 700; color: #86efac; margin-bottom: 4px;">
+                    <i class="fa-solid fa-check-double"></i> 9 Deterministic Checks Passed
+                  </div>
+                  <div style="font-size: 0.75rem; color: #cbd5e1; line-height: 1.6;">
+                    • PID <code>1-938210941</code> matches Apex records<br>
+                    • Institution name matches exactly<br>
+                    • Expiry <code>31-03-2027</code> valid for AY 2026-27<br>
+                    • No digital editing signatures
+                  </div>
+                </div>
+                <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 8px; padding: 12px;">
+                  <div style="font-size: 0.8rem; font-weight: 700; color: #93c5fd; margin-bottom: 4px;">
+                    <i class="fa-solid fa-building-flag"></i> Authority Integration Status
+                  </div>
+                  <div style="font-size: 0.75rem; color: #cbd5e1; line-height: 1.6;">
+                    Status: <code>Authority Verification Pending</code><br>
+                    Truthful disclosure: "Official Verification requires live integration with State Higher Education API."
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Scene 6: Compliance Officer Review -->
+          <div class="scene-content" id="scene-6">
+            <div style="width: 100%; max-width: 750px; margin: auto;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <h3 style="color: #a78bfa; font-size: 1.15rem;"><i class="fa-solid fa-user-shield"></i> Officer Decision & Immutable Audit Trail</h3>
+                <span class="badge" style="background: rgba(168, 85, 247, 0.2); color: #c084fc; border-color: rgba(168, 85, 247, 0.4);">Human In The Loop</span>
+              </div>
+              <div style="background: #1e293b; border-radius: 10px; padding: 14px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #cbd5e1; margin-bottom: 8px;">
+                  <span><strong>Officer:</strong> Meera Joshi (Compliance Officer)</span>
+                  <span style="color: #38bdf8;"><i class="fa-solid fa-database"></i> SQLite WAL Mode Active</span>
+                </div>
+                <p style="font-size: 0.75rem; color: #94a3b8; line-height: 1.5;">
+                  Officer reviews extracted OCR text, inspects Gemini AI confidence scores, examines physical evidence, and records a digitally signed rectification request or final statutory approval.
+                </p>
+              </div>
+              <div style="text-align: center;">
+                <a href="/human-review" target="_blank" class="btn btn-accent" style="font-size: 0.85rem;">
+                  <i class="fa-solid fa-gavel"></i> Open Officer Decision Workspace
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Playback Timeline Bar -->
+      <div class="playback-controls">
+        <button class="play-btn" id="play-btn" onclick="togglePlay()">
+          <i class="fa-solid fa-play" id="play-icon"></i>
+        </button>
+        <div class="timeline-container">
+          <div class="timeline-bar" onclick="seek(event)" id="timeline-track">
+            <div class="timeline-fill" id="timeline-fill"></div>
+          </div>
+          <div class="timeline-time">
+            <span id="current-time">0:00</span>
+            <span id="total-time">3:00</span>
+          </div>
+        </div>
+        <button class="btn btn-outline" onclick="prevScene()" title="Previous Scene">
+          <i class="fa-solid fa-backward-step"></i>
+        </button>
+        <button class="btn btn-outline" onclick="nextScene()" title="Next Scene">
+          <i class="fa-solid fa-forward-step"></i>
+        </button>
+      </div>
+    </section>
+
+    <!-- Right Section: Script, Clicks & Recording Steps -->
+    <aside class="sidebar-section">
+      <!-- Recording Instructions -->
+      <div class="card">
+        <div class="card-title">
+          <i class="fa-solid fa-video" style="color: #ef4444;"></i> How to Record in 3 Clicks
+        </div>
+        <div class="recording-steps">
+          <div class="step-pill">
+            <span class="key-badge">Win + Alt + R</span>
+            <span>Starts instant Windows Game Bar video recording</span>
+          </div>
+          <div class="step-pill">
+            <span class="key-badge">Win + Shift + R</span>
+            <span>Opens Windows Snipping Tool Screen Recorder</span>
+          </div>
+          <div class="step-pill">
+            <i class="fa-solid fa-microphone" style="color: #10b981;"></i>
+            <span>Enable microphone to speak or click Narrate Voiceover</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scene Navigation -->
+      <div class="card">
+        <div class="card-title">
+          <i class="fa-solid fa-list-check" style="color: #3b82f6;"></i> Video Scenes & Timestamps
+        </div>
+        <div class="scene-list">
+          <div class="scene-item active" onclick="goToScene(0)">
+            <div class="scene-num">1</div>
+            <div class="scene-info">
+              <div class="scene-name">Project Intro & AICTE Mandate</div>
+              <div class="scene-time">0:00 - 0:30</div>
+            </div>
+          </div>
+          <div class="scene-item" onclick="goToScene(1)">
+            <div class="scene-num">2</div>
+            <div class="scene-info">
+              <div class="scene-name">Multi-Tenant Isolation</div>
+              <div class="scene-time">0:30 - 1:00</div>
+            </div>
+          </div>
+          <div class="scene-item" onclick="goToScene(2)">
+            <div class="scene-num">3</div>
+            <div class="scene-info">
+              <div class="scene-name">Real PDF Extraction & OCR</div>
+              <div class="scene-time">1:00 - 1:30</div>
+            </div>
+          </div>
+          <div class="scene-item" onclick="goToScene(3)">
+            <div class="scene-num">4</div>
+            <div class="scene-info">
+              <div class="scene-name">Suspicious Sample A (Tampering)</div>
+              <div class="scene-time">1:30 - 2:05</div>
+            </div>
+          </div>
+          <div class="scene-item" onclick="goToScene(4)">
+            <div class="scene-num">5</div>
+            <div class="scene-info">
+              <div class="scene-name">Consistent Sample B (Pass)</div>
+              <div class="scene-time">2:05 - 2:35</div>
+            </div>
+          </div>
+          <div class="scene-item" onclick="goToScene(5)">
+            <div class="scene-num">6</div>
+            <div class="scene-info">
+              <div class="scene-name">Officer Review & Audit Trail</div>
+              <div class="scene-time">2:35 - 3:00</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Spoken Narration Script -->
+      <div class="card">
+        <div class="card-title">
+          <i class="fa-solid fa-quote-left" style="color: #a855f7;"></i> Voiceover Script for This Scene
+        </div>
+        <div class="script-box" id="script-box">
+          Loading script...
+        </div>
+        <div class="highlight-box">
+          <i class="fa-solid fa-lightbulb"></i> <strong>Tip for Presentation:</strong> Speak clearly and show the live tabs in the live AuthenX app at <code>http://localhost:5173/documents</code>.
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    const scenes = [
+      {
+        id: 1,
+        title: "Introduction & AICTE Mandate",
+        url: "http://127.0.0.1:5173/",
+        timeRange: [0, 30],
+        script: "Hello evaluators. Welcome to AuthenX — our AI-powered solution for the AICTE problem statement: Automated Document Authentication, Tampering Detection, and Regulatory Compliance Verification. AuthenX eliminates fraud in institutional applications using client-side OCR, Google Gemini 2.5 Flash, and deterministic regulatory checks with immutable audit logs."
+      },
+      {
+        id: 2,
+        title: "Institution Data Isolation",
+        url: "http://127.0.0.1:5173/institution-portal",
+        timeRange: [30, 60],
+        script: "First, AuthenX implements strict multi-tenant data isolation. Here we log in as Apex Institute of Technology with Permanent ID 1-938210941. Apex administrators can only view, upload, and track their own applications. Even if a user alters the URL to inject another institution's ID, our backend authorization blocks unauthorized access."
+      },
+      {
+        id: 3,
+        title: "Real PDF Extraction & OCR",
+        url: "http://127.0.0.1:5173/documents",
+        timeRange: [60, 90],
+        script: "On the Document Upload screen, AuthenX performs REAL text extraction. We parse digital PDFs using pdfjs-dist and run in-browser OCR for scanned files with Tesseract.js. It extracts the institution name, Permanent ID, certificate number, issue date, and expiry date directly from the document bytes, generating a SHA-256 hash for duplicate collision prevention."
+      },
+      {
+        id: 4,
+        title: "Suspicious Sample A (Tampering Detection)",
+        url: "http://127.0.0.1:5173/documents?scenario=suspicious",
+        timeRange: [90, 125],
+        script: "Let us test our Suspicious Demo Document. When uploaded, AuthenX detects three fatal anomalies: first, the Permanent ID 1-778899001 does not match Apex Institute; second, the issue date is in 2026 while the expiry date is in 2025; and third, metadata inspection reveals it was modified with Adobe Photoshop. AuthenX marks it as 'Needs Manual Review' with full explainable evidence."
+      },
+      {
+        id: 5,
+        title: "Consistent Sample B (Passing Checks)",
+        url: "http://127.0.0.1:5173/documents?scenario=consistent",
+        timeRange: [125, 155],
+        script: "Next, we test our Consistent Demo Document. The extracted Permanent ID 1-938210941 and name match Apex Institute perfectly. Expiry date is valid for Academic Year 2026-27, and no tampering markers are found. All 9 deterministic checks pass. Crucially, AuthenX does not falsely claim official authenticity until the external State Higher Education API completes verification."
+      },
+      {
+        id: 6,
+        title: "Compliance Officer Review & Audit Trail",
+        url: "http://127.0.0.1:5173/human-review",
+        timeRange: [155, 180],
+        script: "Finally, our Compliance Officer logs into the Human Review dashboard. The officer inspects the AI confidence breakdown, verifies the highlighted anomalies, and issues a formal rectification request or statutory approval. Every single decision and anomaly is permanently recorded in SQLite in WAL mode with an immutable audit trail. Thank you!"
+      }
+    ];
+
+    let currentSceneIndex = 0;
+    let isPlaying = false;
+    let currentTime = 0;
+    const totalTime = 180; // 3 minutes
+    let playInterval = null;
+    let isSpeaking = false;
+    let synth = window.speechSynthesis;
+
+    function updateView() {
+      // Update active scene
+      scenes.forEach((s, idx) => {
+        const sceneEl = document.getElementById(`scene-${s.id}`);
+        if (sceneEl) {
+          if (idx === currentSceneIndex) {
+            sceneEl.classList.add('active');
+          } else {
+            sceneEl.classList.remove('active');
+          }
+        }
+      });
+
+      // Update sidebar items
+      document.querySelectorAll('.scene-item').forEach((item, idx) => {
+        if (idx === currentSceneIndex) {
+          item.classList.add('active');
+        } else {
+          item.classList.remove('active');
+        }
+      });
+
+      // Update URL bar
+      document.getElementById('mockup-url').textContent = scenes[currentSceneIndex].url;
+
+      // Update script box
+      document.getElementById('script-box').textContent = scenes[currentSceneIndex].script;
+
+      // Update progress bar
+      const pct = (currentTime / totalTime) * 100;
+      document.getElementById('timeline-fill').style.width = pct + '%';
+
+      // Update time display
+      const mins = Math.floor(currentTime / 60);
+      const secs = Math.floor(currentTime % 60).toString().padStart(2, '0');
+      document.getElementById('current-time').textContent = `${mins}:${secs}`;
+    }
+
+    function goToScene(index) {
+      currentSceneIndex = index;
+      currentTime = scenes[index].timeRange[0];
+      updateView();
+      if (isSpeaking) {
+        speakCurrentScript();
+      }
+    }
+
+    function nextScene() {
+      if (currentSceneIndex < scenes.length - 1) {
+        goToScene(currentSceneIndex + 1);
+      }
+    }
+
+    function prevScene() {
+      if (currentSceneIndex > 0) {
+        goToScene(currentSceneIndex - 1);
+      }
+    }
+
+    function togglePlay() {
+      isPlaying = !isPlaying;
+      const playIcon = document.getElementById('play-icon');
+      if (isPlaying) {
+        playIcon.classList.remove('fa-play');
+        playIcon.classList.add('fa-pause');
+        playInterval = setInterval(() => {
+          currentTime += 1;
+          if (currentTime > totalTime) {
+            currentTime = 0;
+            currentSceneIndex = 0;
+          }
+          // check scene transition
+          const currentScene = scenes[currentSceneIndex];
+          if (currentTime > currentScene.timeRange[1] && currentSceneIndex < scenes.length - 1) {
+            currentSceneIndex++;
+            if (isSpeaking) {
+              speakCurrentScript();
+            }
+          }
+          updateView();
+        }, 1000);
+      } else {
+        playIcon.classList.remove('fa-pause');
+        playIcon.classList.add('fa-play');
+        clearInterval(playInterval);
+      }
+    }
+
+    function seek(event) {
+      const rect = event.currentTarget.getBoundingClientRect();
+      const clickX = event.clientX - rect.left;
+      const width = rect.width;
+      const pct = clickX / width;
+      currentTime = pct * totalTime;
+      // find scene
+      for (let i = 0; i < scenes.length; i++) {
+        if (currentTime >= scenes[i].timeRange[0] && currentTime <= scenes[i].timeRange[1]) {
+          currentSceneIndex = i;
+          break;
+        }
+      }
+      updateView();
+      if (isSpeaking) {
+        speakCurrentScript();
+      }
+    }
+
+    function toggleSpeech() {
+      if (!('speechSynthesis' in window)) {
+        alert('Web Speech API is not supported in this browser.');
+        return;
+      }
+      isSpeaking = !isSpeaking;
+      const speechBtn = document.getElementById('speech-btn');
+      const speechText = document.getElementById('speech-text');
+
+      if (isSpeaking) {
+        speechBtn.classList.remove('btn-primary');
+        speechBtn.classList.add('btn-accent');
+        speechText.textContent = "Mute Voiceover";
+        speakCurrentScript();
+        if (!isPlaying) togglePlay();
+      } else {
+        synth.cancel();
+        speechBtn.classList.remove('btn-accent');
+        speechBtn.classList.add('btn-primary');
+        speechText.textContent = "Narrate Voiceover";
+      }
+    }
+
+    function speakCurrentScript() {
+      if (!('speechSynthesis' in window)) return;
+      synth.cancel();
+      const text = scenes[currentSceneIndex].script;
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.rate = 1.0;
+      utter.pitch = 1.0;
+      synth.speak(utter);
+    }
+
+    // Init
+    updateView();
+  </script>
+</body>
+</html>
